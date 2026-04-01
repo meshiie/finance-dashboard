@@ -166,7 +166,7 @@ Write a morning briefing in 4-6 sentences. Lead with the most important thing (g
       "anthropic-version": "2023-06-01",
     },
     body: JSON.stringify({
-      model: "claude-sonnet-4-20250514",
+      model: "claude-sonnet-4-6",
       max_tokens: 400,
       messages: [{ role: "user", content: prompt }],
     }),
