@@ -2,19 +2,17 @@ name: Daily Finance Update
 
 on:
   schedule:
-    - cron: '0 14 * * *'  # 1am AEDT (UTC+11) = 2pm UTC
-  workflow_dispatch:       # allows manual trigger from GitHub UI
+    - cron: '0 0 * * *'    # 10am AEDT (UTC+10) daily
+    - cron: '0 7 * * 3'    # 5pm AEDT Wednesday — fortnightly payday check
+  workflow_dispatch:
 
 jobs:
   update:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
+      - uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
 
@@ -22,14 +20,14 @@ jobs:
         run: bun install
         working-directory: scripts
 
-      - name: Fetch live prices → write to Sheets
+      - name: Fetch live prices
         env:
           GOOGLE_SERVICE_ACCOUNT_KEY: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY }}
           SPREADSHEET_ID: ${{ secrets.SPREADSHEET_ID }}
         run: bun run update-prices.js
         working-directory: scripts
 
-      - name: Generate Claude summary → send to Telegram
+      - name: Generate summary and send to Telegram
         env:
           GOOGLE_SERVICE_ACCOUNT_KEY: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY }}
           SPREADSHEET_ID: ${{ secrets.SPREADSHEET_ID }}
