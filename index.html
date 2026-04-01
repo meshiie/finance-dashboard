@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Finance Dashboard</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f5f5f0;
+    --surface: #ffffff;
+    --border: rgba(0,0,0,0.1);
+    --text: #1a1a18;
+    --muted: #6b6b65;
+    --green: #1D9E75;
+    --green-bg: #E1F5EE;
+    --red: #E24B4A;
+    --red-bg: #FCEBEB;
+    --amber: #BA7517;
+    --amber-bg: #FAEEDA;
+    --blue: #185FA5;
+    --blue-bg: #E6F1FB;
+    --purple: #534AB7;
+    --purple-bg: #EEEDFE;
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1a1a18;
+      --surface: #242422;
+      --border: rgba(255,255,255,0.1);
+      --text: #e8e6df;
+      --muted: #9a9890;
+      --green-bg: #04342C;
+      --red-bg: #501313;
+      --amber-bg: #412402;
+      --blue-bg: #042C53;
+      --purple-bg: #26215C;
+    }
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 15px;
+    line-height: 1.5;
+  }
+
+  /* PIN SCREEN */
+  #pin-screen {
+    position: fixed; inset: 0;
+    background: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 100;
+  }
+  .pin-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 2.5rem 2rem;
+    width: min(340px, 90vw);
+    text-align: center;
+  }
+  .pin-icon { font-size: 2.5rem; margin-bottom: 1rem; }
+  .pin-card h1 { font-size: 1.3rem; font-weight: 600; margin-bottom: 0.25rem; }
+  .pin-card p { color: var(--muted); font-size: 0.875rem; margin-bottom: 1.5rem; }
+  .pin-input {
+    width: 100%; padding: 0.875rem 1rem;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--bg);
+    color: var(--text);
+    font-size: 1.25rem;
+    letter-spacing: 0.25em;
+    text-align: center;
+    outline: none;
+    margin-bottom: 0.75rem;
+    -webkit-text-security: disc;
+    appearance: none;
+  }
+  .pin-input:focus { border-color: var(--blue); }
+  .pin-btn {
+    width: 100%; padding: 0.875rem;
+    background: var(--text); color: var(--surface);
+    border: none; border-radius: var(--radius-sm);
+    font-size: 0.95rem; font-weight: 500;
+    cursor: pointer; transition: opacity 0.15s;
+  }
+  .pin-btn:hover { opacity: 0.85; }
+  .pin-error { color: var(--red); font-size: 0.85rem; margin-top: 0.75rem; display: none; }
+
+  /* DASHBOARD */
+  #dashboard { display: none; }
+  .container { max-width: 900px; margin: 0 auto; padding: 1.25rem 1rem 3rem; }
+
+  header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1rem 0 1.25rem;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 1.25rem;
+  }
+  header h1 { font-size: 1.1rem; font-weight: 600; }
+  .updated { font-size: 0.8rem; color: var(--muted); }
+  .live-dot {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 0.75rem; color: var(--green);
+    background: var(--green-bg);
+    padding: 3px 10px; border-radius: 99px;
+  }
+  .live-dot::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--green); }
+
+  /* SECTION TITLES */
+  .section-title {
+    font-size: 0.75rem; font-weight: 600; letter-spacing: 0.06em;
+    color: var(--muted); text-transform: uppercase;
+    margin: 1.5rem 0 0.75rem;
+  }
+
+  /* BUDGET CARD */
+  .budget-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+  }
+  .budget-header {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    margin-bottom: 1rem;
+  }
+  .budget-main { font-size: 2rem; font-weight: 700; }
+  .budget-sub { font-size: 0.85rem; color: var(--muted); margin-top: 2px; }
+  .budget-right { text-align: right; }
+  .budget-pct { font-size: 1.5rem; font-weight: 700; }
+  .budget-label { font-size: 0.8rem; color: var(--muted); }
+  .progress-track {
+    height: 10px; background: var(--bg);
+    border-radius: 99px; overflow: hidden; margin-bottom: 0.75rem;
+  }
+  .progress-fill {
+    height: 100%; border-radius: 99px;
+    background: var(--green);
+    transition: width 0.6s ease;
+  }
+  .progress-fill.amber { background: var(--amber); }
+  .progress-fill.red { background: var(--red); }
+  .budget-meta {
+    display: flex; justify-content: space-between;
+    font-size: 0.8rem; color: var(--muted);
+  }
+
+  /* STAT CARDS */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 1rem;
+  }
+  .stat-label { font-size: 0.75rem; color: var(--muted); margin-bottom: 0.25rem; }
+  .stat-value { font-size: 1.3rem; font-weight: 700; }
+  .stat-sub { font-size: 0.75rem; margin-top: 3px; }
+  .green { color: var(--green); }
+  .red { color: var(--red); }
+  .amber { color: var(--amber); }
+  .blue { color: var(--blue); }
+
+  /* SECTION CARD */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+  }
+  .card-title { font-size: 0.875rem; font-weight: 600; margin-bottom: 1rem; color: var(--muted); }
+
+  /* CATEGORY BARS */
+  .cat-row {
+    display: grid;
+    grid-template-columns: 130px 1fr 80px;
+    align-items: center; gap: 10px;
+    margin-bottom: 10px;
+    font-size: 0.8rem;
+  }
+  .cat-name { color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .cat-track { background: var(--bg); border-radius: 99px; height: 8px; position: relative; }
+  .cat-fill { height: 8px; border-radius: 99px; background: var(--blue); }
+  .cat-fill.over { background: var(--red); }
+  .cat-budget-line {
+    position: absolute; top: 0; bottom: 0; width: 2px;
+    background: var(--border); border-radius: 1px;
+  }
+  .cat-amount { text-align: right; font-weight: 500; }
+  .cat-amount.over { color: var(--red); }
+
+  /* PORTFOLIO TABLE */
+  .holdings-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+  .holdings-table th {
+    text-align: left; padding: 0.5rem 0.5rem 0.75rem;
+    color: var(--muted); font-weight: 500; font-size: 0.75rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .holdings-table td { padding: 0.6rem 0.5rem; border-bottom: 1px solid var(--border); }
+  .holdings-table tr:last-child td { border-bottom: none; }
+  .holdings-table .right { text-align: right; }
+  .ticker-badge {
+    display: inline-block;
+    font-size: 0.7rem; font-weight: 600;
+    padding: 2px 6px; border-radius: 4px;
+    background: var(--blue-bg); color: var(--blue);
+  }
+  .ticker-badge.crypto { background: var(--purple-bg); color: var(--purple); }
+  .chg { font-size: 0.75rem; }
+  .chg.pos { color: var(--green); }
+  .chg.neg { color: var(--red); }
+
+  /* PORTFOLIO SUMMARY ROW */
+  .portfolio-total {
+    display: flex; justify-content: space-between; align-items: center;
+    padding-top: 0.75rem; margin-top: 0.25rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.85rem;
+  }
+  .portfolio-total strong { font-size: 1rem; }
+
+  /* BALANCES */
+  .balance-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 0.75rem;
+  }
+  .balance-item {
+    background: var(--bg); border-radius: var(--radius-sm);
+    padding: 0.875rem; text-align: center;
+  }
+  .balance-label { font-size: 0.72rem; color: var(--muted); margin-bottom: 0.25rem; }
+  .balance-amount { font-size: 1rem; font-weight: 700; }
+
+  /* FOOTER */
+  footer {
+    text-align: center; padding: 2rem 0 1rem;
+    font-size: 0.75rem; color: var(--muted);
+  }
+
+  /* LOADING */
+  .loading {
+    display: flex; align-items: center; justify-content: center;
+    height: 60vh; font-size: 0.9rem; color: var(--muted);
+  }
+  .spinner {
+    width: 20px; height: 20px; border: 2px solid var(--border);
+    border-top-color: var(--text); border-radius: 50%;
+    animation: spin 0.7s linear infinite; margin-right: 10px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<!-- PIN SCREEN -->
+<div id="pin-screen">
+  <div class="pin-card">
+    <div class="pin-icon">🔒</div>
+    <h1>Finance Dashboard</h1>
+    <p>Enter your PIN to continue</p>
+    <input
+      class="pin-input"
+      type="number"
+      id="pin-input"
+      placeholder="••••"
+      inputmode="numeric"
+      autocomplete="off"
+      maxlength="6"
+      onkeydown="if(event.key==='Enter') checkPin()"
+    >
+    <button class="pin-btn" onclick="checkPin()">Unlock</button>
+    <div class="pin-error" id="pin-error">Incorrect PIN. Try again.</div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard">
+  <div class="container">
+    <header>
+      <div>
+        <h1>Finance Dashboard</h1>
+        <div class="updated" id="updated-time">Loading...</div>
+      </div>
+      <span class="live-dot">Live</span>
+    </header>
+
+    <div id="content">
+      <div class="loading"><div class="spinner"></div>Loading your data...</div>
+    </div>
+
+    <footer>Updated daily at 10am AEST · Powered by Claude</footer>
+  </div>
+</div>
+
+<script>
+const CORRECT_PIN = "DASHBOARD_PIN_PLACEHOLDER";
+const STORAGE_KEY = "fin_auth_v1";
+
+// Check existing auth
+function isAuthenticated() {
+  try {
+    return localStorage.getItem(STORAGE_KEY) === btoa(CORRECT_PIN);
+  } catch { return false; }
+}
+
+function checkPin() {
+  const entered = String(document.getElementById("pin-input").value).trim();
+  if (entered === CORRECT_PIN) {
+    try { localStorage.setItem(STORAGE_KEY, btoa(CORRECT_PIN)); } catch {}
+    document.getElementById("pin-screen").style.display = "none";
+    document.getElementById("dashboard").style.display = "block";
+    loadDashboard();
+  } else {
+    document.getElementById("pin-error").style.display = "block";
+    document.getElementById("pin-input").value = "";
+    document.getElementById("pin-input").focus();
+  }
+}
+
+// Init — skip PIN if already authed
+if (isAuthenticated()) {
+  document.getElementById("pin-screen").style.display = "none";
+  document.getElementById("dashboard").style.display = "block";
+}
+
+// ── Data loading ──────────────────────────────────────────────────────────────
+
+async function loadDashboard() {
+  try {
+    const res = await fetch("./data.json?t=" + Date.now());
+    if (!res.ok) throw new Error("data.json not found");
+    const data = await res.json();
+    render(data);
+  } catch (err) {
+    document.getElementById("content").innerHTML =
+      `<div class="loading">⚠️ Could not load data. Run the workflow first.</div>`;
+  }
+}
+
+// ── Rendering ─────────────────────────────────────────────────────────────────
+
+function fmt(n, dec = 0) {
+  if (n === null || n === undefined || isNaN(n)) return "$0";
+  const abs = Math.abs(n);
+  const str = abs.toLocaleString("en-AU", { minimumFractionDigits: dec, maximumFractionDigits: dec });
+  return (n < 0 ? "-$" : "$") + str;
+}
+
+function fmtPct(n) {
+  return (n >= 0 ? "+" : "") + Number(n).toFixed(1) + "%";
+}
+
+function render(d) {
+  document.getElementById("updated-time").textContent = "Refreshed " + d.meta.updated;
+
+  const pct = d.discretionary.pct_used;
+  const progressClass = pct >= 100 ? "red" : pct >= 75 ? "amber" : "";
+  const savingsClass = d.savings.on_track ? "green" : "red";
+  const savingsLabel = d.savings.on_track ? "On track ✓" : "Behind target";
+
+  // Top mover pill
+  const topMover = d.portfolio.top_movers[0];
+  const moverStr = topMover
+    ? `${topMover.ticker} ${topMover.change >= 0 ? "+" : ""}${topMover.change.toFixed(2)}%`
+    : "—";
+  const moverClass = topMover && topMover.change >= 0 ? "green" : "red";
+
+  // Category bars
+  const maxSpend = Math.max(...d.spending.categories.map(c => Math.max(c.spent, c.budget)), 1);
+  const catBars = d.spending.categories
+    .filter(c => c.spent > 0 || c.budget > 0)
+    .sort((a, b) => b.spent - a.spent)
+    .map(c => {
+      const pctSpent = Math.min((c.spent / c.budget) * 100, 100).toFixed(0);
+      const budgetPos = Math.min((c.budget / maxSpend) * 100, 100).toFixed(0);
+      const fillWidth = Math.min((c.spent / maxSpend) * 100, 100).toFixed(0);
+      const over = c.over ? "over" : "";
+      return `
+        <div class="cat-row">
+          <div class="cat-name">${c.name}</div>
+          <div class="cat-track">
+            <div class="cat-fill ${over}" style="width:${fillWidth}%"></div>
+            <div class="cat-budget-line" style="left:${budgetPos}%"></div>
+          </div>
+          <div class="cat-amount ${over}">${fmt(c.spent)}</div>
+        </div>`;
+    }).join("");
+
+  // Holdings table
+  const holdingsRows = d.portfolio.holdings.map(h => {
+    const plSign = h.pl >= 0 ? "pos" : "neg";
+    const isCrypto = h.ticker === "SOL" || h.ticker.includes("SOL");
+    const badgeClass = isCrypto ? "crypto" : "";
+    const chgSign = h.change_24h >= 0 ? "pos" : "neg";
+    return `
+      <tr>
+        <td>
+          <span class="ticker-badge ${badgeClass}">${h.ticker}</span>
+          <div style="font-size:0.72rem;color:var(--muted);margin-top:2px">${h.name.slice(0,22)}</div>
+        </td>
+        <td class="right">${fmt(h.value, 2)}</td>
+        <td class="right chg ${plSign}">${h.pl >= 0 ? "+" : ""}${fmt(Math.abs(h.pl), 0)}</td>
+        <td class="right chg ${chgSign}">${h.change_24h >= 0 ? "+" : ""}${Number(h.change_24h).toFixed(2)}%</td>
+      </tr>`;
+  }).join("");
+
+  // Balance items
+  const balanceItems = d.balances.accounts.map(b => `
+    <div class="balance-item">
+      <div class="balance-label">${b.label}</div>
+      <div class="balance-amount">${fmt(b.amount, 2)}</div>
+    </div>`).join("");
+
+  document.getElementById("updated-time").textContent = "Refreshed " + d.meta.updated;
+
+  document.getElementById("content").innerHTML = `
+
+    <p class="section-title">Fortnightly budget — day ${d.cycle.day} of ${d.cycle.total_days}</p>
+
+    <div class="budget-card">
+      <div class="budget-header">
+        <div>
+          <div class="budget-main">${fmt(d.discretionary.spent, 2)}</div>
+          <div class="budget-sub">of ${fmt(d.discretionary.budget)} budget · ${d.cycle.days_remaining} days left</div>
+        </div>
+        <div class="budget-right">
+          <div class="budget-pct ${progressClass}">${pct}%</div>
+          <div class="budget-label">used</div>
+        </div>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill ${progressClass}" style="width:${Math.min(pct, 100)}%"></div>
+      </div>
+      <div class="budget-meta">
+        <span>${fmt(d.discretionary.remaining, 2)} remaining</span>
+        <span>${d.discretionary.projected > 0 ? fmt(d.discretionary.projected) + " projected" : "First day"}</span>
+      </div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Savings this cycle</div>
+        <div class="stat-value ${savingsClass}">${fmt(d.savings.amount, 0)}</div>
+        <div class="stat-sub ${savingsClass}">${savingsLabel}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Savings rate</div>
+        <div class="stat-value ${savingsClass}">${d.savings.rate_pct}%</div>
+        <div class="stat-sub" style="color:var(--muted)">target ${d.savings.target_rate_pct}%</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Total portfolio</div>
+        <div class="stat-value blue">${fmt(d.portfolio.total, 0)}</div>
+        <div class="stat-sub green">+${fmt(d.portfolio.pl, 0)} all-time</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Top mover today</div>
+        <div class="stat-value ${moverClass}" style="font-size:1rem">${moverStr}</div>
+        <div class="stat-sub" style="color:var(--muted)">${d.portfolio.pl_pct}% all-time P&L</div>
+      </div>
+    </div>
+
+    <p class="section-title">Spending by category — this fortnight (vs budget)</p>
+    <div class="card">
+      <div style="font-size:0.72rem;color:var(--muted);margin-bottom:0.75rem">
+        Bar = spent &nbsp;│&nbsp; Vertical line = fortnightly budget
+      </div>
+      ${catBars}
+      <div style="display:flex;justify-content:space-between;font-size:0.75rem;color:var(--muted);border-top:1px solid var(--border);margin-top:0.75rem;padding-top:0.75rem">
+        <span>Mortgage this cycle: ${fmt(d.spending.mortgage, 2)}</span>
+        <span>All accounts total: ${fmt(d.spending.total_all_accounts, 2)}</span>
+      </div>
+    </div>
+
+    <p class="section-title">Investment portfolio</p>
+    <div class="card">
+      <div style="overflow-x:auto">
+        <table class="holdings-table">
+          <thead>
+            <tr>
+              <th>Holding</th>
+              <th class="right">Value</th>
+              <th class="right">All-time P&L</th>
+              <th class="right">Today</th>
+            </tr>
+          </thead>
+          <tbody>${holdingsRows}</tbody>
+        </table>
+      </div>
+      <div class="portfolio-total">
+        <span style="color:var(--muted)">Total portfolio</span>
+        <strong>${fmt(d.portfolio.total, 2)} &nbsp;<span class="green">+${fmt(d.portfolio.pl, 0)} (${d.portfolio.pl_pct}%)</span></strong>
+      </div>
+    </div>
+
+    <p class="section-title">Account balances</p>
+    <div class="card">
+      <div class="balance-grid">
+        ${balanceItems}
+      </div>
+      <div style="text-align:right;font-size:0.8rem;color:var(--muted);margin-top:0.75rem;padding-top:0.75rem;border-top:1px solid var(--border)">
+        Total liquid: <strong>${fmt(d.balances.total, 2)}</strong>
+      </div>
+    </div>
+  `;
+}
+
+// Auto-refresh every 30 minutes
+setTimeout(() => { if (isAuthenticated()) loadDashboard(); }, 30 * 60 * 1000);
+</script>
+
+</body>
+</html>
