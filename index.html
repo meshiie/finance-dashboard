@@ -5,324 +5,218 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Finance Dashboard</title>
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 
-  :root {
-    --bg: #f5f5f0;
-    --surface: #ffffff;
-    --border: rgba(0,0,0,0.1);
-    --text: #1a1a18;
-    --muted: #6b6b65;
-    --green: #1D9E75;
-    --green-bg: #E1F5EE;
-    --red: #E24B4A;
-    --red-bg: #FCEBEB;
-    --amber: #BA7517;
-    --amber-bg: #FAEEDA;
-    --blue: #185FA5;
-    --blue-bg: #E6F1FB;
-    --purple: #534AB7;
-    --purple-bg: #EEEDFE;
-    --radius: 12px;
-    --radius-sm: 8px;
-  }
+:root {
+  --bg:#f5f5f0;--surface:#fff;--border:rgba(0,0,0,0.09);
+  --text:#1a1a18;--muted:#6b6b65;--subtle:#9a9890;
+  --green:#1D9E75;--green-bg:#E1F5EE;--green-text:#0F6E56;
+  --red:#E24B4A;--red-bg:#FCEBEB;--red-text:#A32D2D;
+  --amber:#BA7517;--amber-bg:#FAEEDA;--amber-text:#854F0B;
+  --blue:#185FA5;--blue-bg:#E6F1FB;--blue-text:#0C447C;
+  --purple:#534AB7;--purple-bg:#EEEDFE;
+  --teal:#1D9E75;--teal-bg:#E1F5EE;--teal-text:#085041;
+  --r:12px;--rs:8px;
+}
 
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --bg: #1a1a18;
-      --surface: #242422;
-      --border: rgba(255,255,255,0.1);
-      --text: #e8e6df;
-      --muted: #9a9890;
-      --green-bg: #04342C;
-      --red-bg: #501313;
-      --amber-bg: #412402;
-      --blue-bg: #042C53;
-      --purple-bg: #26215C;
-    }
+@media(prefers-color-scheme:dark){
+  :root{
+    --bg:#1a1a18;--surface:#242422;--border:rgba(255,255,255,0.09);
+    --text:#e8e6df;--muted:#9a9890;--subtle:#6b6b65;
+    --green-bg:#04342C;--green-text:#5DCAA5;
+    --red-bg:#501313;--red-text:#F09595;
+    --amber-bg:#412402;--amber-text:#EF9F27;
+    --blue-bg:#042C53;--blue-text:#85B7EB;
+    --purple-bg:#26215C;
+    --teal-bg:#04342C;--teal-text:#5DCAA5;
   }
+}
 
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    font-size: 15px;
-    line-height: 1.5;
-  }
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:15px;line-height:1.5}
 
-  /* PIN SCREEN */
-  #pin-screen {
-    position: fixed; inset: 0;
-    background: var(--bg);
-    display: flex; align-items: center; justify-content: center;
-    z-index: 100;
-  }
-  .pin-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 2.5rem 2rem;
-    width: min(340px, 90vw);
-    text-align: center;
-  }
-  .pin-icon { font-size: 2.5rem; margin-bottom: 1rem; }
-  .pin-card h1 { font-size: 1.3rem; font-weight: 600; margin-bottom: 0.25rem; }
-  .pin-card p { color: var(--muted); font-size: 0.875rem; margin-bottom: 1.5rem; }
-  .pin-input {
-    width: 100%; padding: 0.875rem 1rem;
-    border: 1.5px solid var(--border);
-    border-radius: var(--radius-sm);
-    background: var(--bg);
-    color: var(--text);
-    font-size: 1.25rem;
-    letter-spacing: 0.25em;
-    text-align: center;
-    outline: none;
-    margin-bottom: 0.75rem;
-    -webkit-text-security: disc;
-    appearance: none;
-  }
-  .pin-input:focus { border-color: var(--blue); }
-  .pin-btn {
-    width: 100%; padding: 0.875rem;
-    background: var(--text); color: var(--surface);
-    border: none; border-radius: var(--radius-sm);
-    font-size: 0.95rem; font-weight: 500;
-    cursor: pointer; transition: opacity 0.15s;
-  }
-  .pin-btn:hover { opacity: 0.85; }
-  .pin-error { color: var(--red); font-size: 0.85rem; margin-top: 0.75rem; display: none; }
+/* PIN */
+#pin-screen{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:100}
+.pin-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:2.5rem 2rem;width:min(340px,90vw);text-align:center}
+.pin-icon{font-size:2.5rem;margin-bottom:1rem}
+.pin-card h1{font-size:1.3rem;font-weight:600;margin-bottom:.25rem}
+.pin-card p{color:var(--muted);font-size:.875rem;margin-bottom:1.5rem}
+.pin-input{width:100%;padding:.875rem 1rem;border:1.5px solid var(--border);border-radius:var(--rs);background:var(--bg);color:var(--text);font-size:1.4rem;letter-spacing:.3em;text-align:center;outline:none;margin-bottom:.75rem;-webkit-text-security:disc}
+.pin-input:focus{border-color:var(--blue)}
+.pin-btn{width:100%;padding:.875rem;background:var(--text);color:var(--surface);border:none;border-radius:var(--rs);font-size:.95rem;font-weight:500;cursor:pointer;transition:opacity .15s}
+.pin-btn:hover{opacity:.85}
+.pin-error{color:var(--red);font-size:.85rem;margin-top:.75rem;display:none}
 
-  /* DASHBOARD */
-  #dashboard { display: none; }
-  .container { max-width: 900px; margin: 0 auto; padding: 1.25rem 1rem 3rem; }
+/* LAYOUT */
+#dashboard{display:none}
+.container{max-width:920px;margin:0 auto;padding:1.25rem 1rem 3rem}
 
-  header {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 1rem 0 1.25rem;
-    border-bottom: 1px solid var(--border);
-    margin-bottom: 1.25rem;
-  }
-  header h1 { font-size: 1.1rem; font-weight: 600; }
-  .updated { font-size: 0.8rem; color: var(--muted); }
-  .live-dot {
-    display: inline-flex; align-items: center; gap: 5px;
-    font-size: 0.75rem; color: var(--green);
-    background: var(--green-bg);
-    padding: 3px 10px; border-radius: 99px;
-  }
-  .live-dot::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--green); }
+header{display:flex;align-items:center;justify-content:space-between;padding:1rem 0 1.25rem;border-bottom:1px solid var(--border);margin-bottom:1.25rem}
+header h1{font-size:1.1rem;font-weight:600}
+.updated{font-size:.78rem;color:var(--muted);margin-top:2px}
+.live-dot{display:inline-flex;align-items:center;gap:5px;font-size:.75rem;color:var(--green-text);background:var(--green-bg);padding:3px 10px;border-radius:99px}
+.live-dot::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--green)}
 
-  /* SECTION TITLES */
-  .section-title {
-    font-size: 0.75rem; font-weight: 600; letter-spacing: 0.06em;
-    color: var(--muted); text-transform: uppercase;
-    margin: 1.5rem 0 0.75rem;
-  }
+.section-title{font-size:.72rem;font-weight:600;letter-spacing:.06em;color:var(--muted);text-transform:uppercase;margin:1.5rem 0 .75rem}
 
-  /* BUDGET CARD */
-  .budget-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 1.25rem;
-    margin-bottom: 1rem;
-  }
-  .budget-header {
-    display: flex; justify-content: space-between; align-items: flex-start;
-    margin-bottom: 1rem;
-  }
-  .budget-main { font-size: 2rem; font-weight: 700; }
-  .budget-sub { font-size: 0.85rem; color: var(--muted); margin-top: 2px; }
-  .budget-right { text-align: right; }
-  .budget-pct { font-size: 1.5rem; font-weight: 700; }
-  .budget-label { font-size: 0.8rem; color: var(--muted); }
-  .progress-track {
-    height: 10px; background: var(--bg);
-    border-radius: 99px; overflow: hidden; margin-bottom: 0.75rem;
-  }
-  .progress-fill {
-    height: 100%; border-radius: 99px;
-    background: var(--green);
-    transition: width 0.6s ease;
-  }
-  .progress-fill.amber { background: var(--amber); }
-  .progress-fill.red { background: var(--red); }
-  .budget-meta {
-    display: flex; justify-content: space-between;
-    font-size: 0.8rem; color: var(--muted);
-  }
+/* CARDS */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.25rem;margin-bottom:1rem}
+.card-title{font-size:.8rem;font-weight:600;color:var(--muted);margin-bottom:.75rem;letter-spacing:.03em}
 
-  /* STAT CARDS */
-  .stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    gap: 0.75rem;
-    margin-bottom: 1rem;
-  }
-  .stat-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    padding: 1rem;
-  }
-  .stat-label { font-size: 0.75rem; color: var(--muted); margin-bottom: 0.25rem; }
-  .stat-value { font-size: 1.3rem; font-weight: 700; }
-  .stat-sub { font-size: 0.75rem; margin-top: 3px; }
-  .green { color: var(--green); }
-  .red { color: var(--red); }
-  .amber { color: var(--amber); }
-  .blue { color: var(--blue); }
+/* BIG BAR */
+.big-bar-header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:.75rem}
+.big-bar-main{font-size:1.9rem;font-weight:700}
+.big-bar-sub{font-size:.82rem;color:var(--muted);margin-top:3px}
+.big-bar-right{text-align:right}
+.big-bar-pct{font-size:1.4rem;font-weight:700}
+.big-bar-label{font-size:.75rem;color:var(--muted)}
+.bar-track{height:10px;background:var(--bg);border-radius:99px;overflow:hidden;margin-bottom:.6rem}
+.bar-fill{height:100%;border-radius:99px;background:var(--green);transition:width .6s ease}
+.bar-fill.warn{background:var(--amber)}
+.bar-fill.over{background:var(--red)}
+.bar-meta{display:flex;justify-content:space-between;font-size:.78rem;color:var(--muted)}
 
-  /* SECTION CARD */
-  .card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 1.25rem;
-    margin-bottom: 1rem;
-  }
-  .card-title { font-size: 0.875rem; font-weight: 600; margin-bottom: 1rem; color: var(--muted); }
+/* STAT GRID */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:.75rem;margin-bottom:1rem}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);padding:.875rem 1rem}
+.stat-label{font-size:.72rem;color:var(--muted);margin-bottom:.2rem}
+.stat-value{font-size:1.25rem;font-weight:700}
+.stat-sub{font-size:.72rem;margin-top:3px}
+.green{color:var(--green)}.red{color:var(--red)}.amber{color:var(--amber)}.blue{color:var(--blue)}
 
-  /* CATEGORY BARS */
-  .cat-row {
-    display: grid;
-    grid-template-columns: 130px 1fr 80px;
-    align-items: center; gap: 10px;
-    margin-bottom: 10px;
-    font-size: 0.8rem;
-  }
-  .cat-name { color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .cat-track { background: var(--bg); border-radius: 99px; height: 8px; position: relative; }
-  .cat-fill { height: 8px; border-radius: 99px; background: var(--blue); }
-  .cat-fill.over { background: var(--red); }
-  .cat-budget-line {
-    position: absolute; top: 0; bottom: 0; width: 2px;
-    background: var(--border); border-radius: 1px;
-  }
-  .cat-amount { text-align: right; font-weight: 500; }
-  .cat-amount.over { color: var(--red); }
+/* CATEGORY BARS */
+.cat-row{display:grid;grid-template-columns:120px 1fr 72px;align-items:center;gap:10px;margin-bottom:9px;font-size:.78rem}
+.cat-name{color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cat-track{background:var(--bg);border-radius:99px;height:7px;position:relative}
+.cat-fill{height:7px;border-radius:99px;background:var(--blue)}
+.cat-fill.over{background:var(--red)}
+.cat-budget-line{position:absolute;top:-2px;bottom:-2px;width:2px;background:var(--border);border-radius:1px}
+.cat-amount{text-align:right;font-weight:500}
+.cat-amount.over{color:var(--red)}
 
-  /* PORTFOLIO TABLE */
-  .holdings-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
-  .holdings-table th {
-    text-align: left; padding: 0.5rem 0.5rem 0.75rem;
-    color: var(--muted); font-weight: 500; font-size: 0.75rem;
-    border-bottom: 1px solid var(--border);
-  }
-  .holdings-table td { padding: 0.6rem 0.5rem; border-bottom: 1px solid var(--border); }
-  .holdings-table tr:last-child td { border-bottom: none; }
-  .holdings-table .right { text-align: right; }
-  .ticker-badge {
-    display: inline-block;
-    font-size: 0.7rem; font-weight: 600;
-    padding: 2px 6px; border-radius: 4px;
-    background: var(--blue-bg); color: var(--blue);
-  }
-  .ticker-badge.crypto { background: var(--purple-bg); color: var(--purple); }
-  .chg { font-size: 0.75rem; }
-  .chg.pos { color: var(--green); }
-  .chg.neg { color: var(--red); }
+/* BILLS */
+.bills-stats{display:flex;gap:.6rem;margin-bottom:1rem;flex-wrap:wrap}
+.bill-stat{flex:1;min-width:80px;background:var(--bg);border-radius:var(--rs);padding:.75rem;text-align:center}
+.bill-stat-label{font-size:.7rem;color:var(--muted);margin-bottom:.2rem}
+.bill-stat-value{font-size:1rem;font-weight:700}
 
-  /* PORTFOLIO SUMMARY ROW */
-  .portfolio-total {
-    display: flex; justify-content: space-between; align-items: center;
-    padding-top: 0.75rem; margin-top: 0.25rem;
-    border-top: 1px solid var(--border);
-    font-size: 0.85rem;
-  }
-  .portfolio-total strong { font-size: 1rem; }
+/* CALENDAR */
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:1rem}
+.cal-day{border-radius:var(--rs);padding:5px 3px;min-height:54px;border:1px solid transparent}
+.cal-day.has-bills{border-color:var(--border)}
+.cal-day.today{border-color:var(--blue);background:var(--blue-bg)}
+.cal-day.past{opacity:.55}
+.cal-day-label{font-size:.58rem;color:var(--subtle);text-align:center;margin-bottom:2px}
+.cal-day-num{font-size:.68rem;font-weight:600;color:var(--muted);text-align:center;margin-bottom:3px}
+.cal-day.today .cal-day-num{color:var(--blue-text)}
+.cal-bill-pill{font-size:.58rem;padding:1px 4px;border-radius:3px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cal-bill-pill.paid{background:var(--green-bg);color:var(--green-text)}
+.cal-bill-pill.upcoming{background:var(--blue-bg);color:var(--blue-text)}
+.cal-bill-pill.overdue{background:var(--red-bg);color:var(--red-text)}
+.cal-bill-pill.adhoc{background:var(--amber-bg);color:var(--amber-text)}
 
-  /* BALANCES */
-  .balance-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-    gap: 0.75rem;
-  }
-  .balance-item {
-    background: var(--bg); border-radius: var(--radius-sm);
-    padding: 0.875rem; text-align: center;
-  }
-  .balance-label { font-size: 0.72rem; color: var(--muted); margin-bottom: 0.25rem; }
-  .balance-amount { font-size: 1rem; font-weight: 700; }
+/* BILL LIST */
+.bill-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);font-size:.82rem}
+.bill-row:last-child{border-bottom:none}
+.bill-icon{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.62rem;font-weight:700;flex-shrink:0}
+.bill-icon.paid{background:var(--green-bg);color:var(--green-text)}
+.bill-icon.upcoming{background:var(--blue-bg);color:var(--blue-text)}
+.bill-icon.overdue{background:var(--red-bg);color:var(--red-text)}
+.bill-info{flex:1;min-width:0}
+.bill-name{font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bill-meta{font-size:.7rem;color:var(--muted);margin-top:1px}
+.bill-amount{text-align:right;font-weight:600;white-space:nowrap}
+.bill-status-label{font-size:.65rem;text-align:right;margin-top:1px}
 
-  /* FOOTER */
-  footer {
-    text-align: center; padding: 2rem 0 1rem;
-    font-size: 0.75rem; color: var(--muted);
-  }
+/* ADHOC BILLS */
+.adhoc-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.25rem;margin-bottom:.75rem}
+.adhoc-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem}
+.adhoc-name{font-weight:600;font-size:.9rem}
+.adhoc-badge{font-size:.7rem;padding:2px 8px;border-radius:99px;background:var(--amber-bg);color:var(--amber-text)}
+.adhoc-badge.over{background:var(--red-bg);color:var(--red-text)}
+.adhoc-bar-track{height:8px;background:var(--bg);border-radius:99px;overflow:hidden;margin-bottom:.5rem}
+.adhoc-bar-fill{height:8px;border-radius:99px;background:var(--amber)}
+.adhoc-bar-fill.over{background:var(--red)}
+.adhoc-meta{display:flex;justify-content:space-between;font-size:.75rem;color:var(--muted);margin-bottom:.75rem}
+.adhoc-occurrences{border-top:1px solid var(--border);padding-top:.6rem;margin-top:.25rem}
+.adhoc-occ-title{font-size:.68rem;color:var(--muted);margin-bottom:.4rem;letter-spacing:.04em;text-transform:uppercase;font-weight:600}
+.adhoc-occ-row{display:flex;justify-content:space-between;font-size:.75rem;padding:3px 0;color:var(--muted)}
+.adhoc-occ-row span:last-child{font-weight:500;color:var(--text)}
+.adhoc-empty{font-size:.78rem;color:var(--subtle);font-style:italic}
 
-  /* LOADING */
-  .loading {
-    display: flex; align-items: center; justify-content: center;
-    height: 60vh; font-size: 0.9rem; color: var(--muted);
-  }
-  .spinner {
-    width: 20px; height: 20px; border: 2px solid var(--border);
-    border-top-color: var(--text); border-radius: 50%;
-    animation: spin 0.7s linear infinite; margin-right: 10px;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
+/* HOLDINGS */
+.holdings-table{width:100%;border-collapse:collapse;font-size:.8rem}
+.holdings-table th{text-align:left;padding:.5rem .5rem .75rem;color:var(--muted);font-weight:500;font-size:.72rem;border-bottom:1px solid var(--border)}
+.holdings-table td{padding:.55rem .5rem;border-bottom:1px solid var(--border);vertical-align:middle}
+.holdings-table tr:last-child td{border-bottom:none}
+.holdings-table .right{text-align:right}
+.ticker-badge{display:inline-block;font-size:.68rem;font-weight:700;padding:2px 6px;border-radius:4px;background:var(--blue-bg);color:var(--blue-text)}
+.ticker-badge.crypto{background:var(--purple-bg);color:var(--purple)}
+.chg{font-size:.72rem}
+.chg.pos{color:var(--green)}.chg.neg{color:var(--red)}
+.portfolio-footer{display:flex;justify-content:space-between;align-items:center;padding-top:.75rem;margin-top:.25rem;border-top:1px solid var(--border);font-size:.82rem}
+.portfolio-footer strong{font-size:.95rem}
+
+/* BALANCES */
+.balance-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:.75rem}
+.balance-item{background:var(--bg);border-radius:var(--rs);padding:.875rem;text-align:center}
+.balance-label{font-size:.7rem;color:var(--muted);margin-bottom:.2rem}
+.balance-amount{font-size:.95rem;font-weight:700}
+.balance-total{text-align:right;font-size:.78rem;color:var(--muted);margin-top:.75rem;padding-top:.75rem;border-top:1px solid var(--border)}
+
+.loading{display:flex;align-items:center;justify-content:center;height:55vh;font-size:.88rem;color:var(--muted)}
+.spinner{width:18px;height:18px;border:2px solid var(--border);border-top-color:var(--text);border-radius:50%;animation:spin .7s linear infinite;margin-right:10px}
+@keyframes spin{to{transform:rotate(360deg)}}
+footer{text-align:center;padding:2rem 0 1rem;font-size:.72rem;color:var(--muted)}
+
+@media(max-width:500px){
+  .cal-grid{gap:2px}
+  .cal-day{padding:3px 2px;min-height:44px}
+  .cal-bill-pill{display:none}
+  .cat-row{grid-template-columns:85px 1fr 56px}
+}
 </style>
 </head>
 <body>
 
-<!-- PIN SCREEN -->
 <div id="pin-screen">
   <div class="pin-card">
     <div class="pin-icon">🔒</div>
     <h1>Finance Dashboard</h1>
     <p>Enter your PIN to continue</p>
-    <input
-      class="pin-input"
-      type="number"
-      id="pin-input"
-      placeholder="••••"
-      inputmode="numeric"
-      autocomplete="off"
-      maxlength="6"
-      onkeydown="if(event.key==='Enter') checkPin()"
-    >
+    <input class="pin-input" type="number" id="pin-input" placeholder="••••"
+      inputmode="numeric" autocomplete="off"
+      onkeydown="if(event.key==='Enter')checkPin()">
     <button class="pin-btn" onclick="checkPin()">Unlock</button>
-    <div class="pin-error" id="pin-error">Incorrect PIN. Try again.</div>
+    <div class="pin-error" id="pin-error">Incorrect PIN — try again</div>
   </div>
 </div>
 
-<!-- DASHBOARD -->
 <div id="dashboard">
   <div class="container">
     <header>
       <div>
         <h1>Finance Dashboard</h1>
-        <div class="updated" id="updated-time">Loading...</div>
+        <div class="updated" id="updated-time">Loading…</div>
       </div>
       <span class="live-dot">Live</span>
     </header>
-
     <div id="content">
-      <div class="loading"><div class="spinner"></div>Loading your data...</div>
+      <div class="loading"><div class="spinner"></div>Loading your data…</div>
     </div>
-
     <footer>Updated daily at 10am AEST · Powered by Claude</footer>
   </div>
 </div>
 
 <script>
 const CORRECT_PIN = "DASHBOARD_PIN_PLACEHOLDER";
-const STORAGE_KEY = "fin_auth_v1";
+const KEY = "fin_v2";
 
-// Check existing auth
-function isAuthenticated() {
-  try {
-    return localStorage.getItem(STORAGE_KEY) === btoa(CORRECT_PIN);
-  } catch { return false; }
-}
+function isAuth() { try { return localStorage.getItem(KEY)===btoa(CORRECT_PIN); } catch { return false; } }
 
 function checkPin() {
-  const entered = String(document.getElementById("pin-input").value).trim();
-  if (entered === CORRECT_PIN) {
-    try { localStorage.setItem(STORAGE_KEY, btoa(CORRECT_PIN)); } catch {}
+  const v = String(document.getElementById("pin-input").value).trim();
+  if (v === CORRECT_PIN) {
+    try { localStorage.setItem(KEY, btoa(CORRECT_PIN)); } catch {}
     document.getElementById("pin-screen").style.display = "none";
     document.getElementById("dashboard").style.display = "block";
     loadDashboard();
@@ -333,197 +227,261 @@ function checkPin() {
   }
 }
 
-// Init — skip PIN if already authed
-if (isAuthenticated()) {
+if (isAuth()) {
   document.getElementById("pin-screen").style.display = "none";
   document.getElementById("dashboard").style.display = "block";
 }
 
-// ── Data loading ──────────────────────────────────────────────────────────────
-
 async function loadDashboard() {
   try {
     const res = await fetch("./data.json?t=" + Date.now());
-    if (!res.ok) throw new Error("data.json not found");
-    const data = await res.json();
-    render(data);
-  } catch (err) {
+    if (!res.ok) throw new Error();
+    render(await res.json());
+  } catch {
     document.getElementById("content").innerHTML =
-      `<div class="loading">⚠️ Could not load data. Run the workflow first.</div>`;
+      '<div class="loading">⚠️ No data yet — run the workflow first.</div>';
   }
 }
 
-// ── Rendering ─────────────────────────────────────────────────────────────────
-
-function fmt(n, dec = 0) {
-  if (n === null || n === undefined || isNaN(n)) return "$0";
-  const abs = Math.abs(n);
-  const str = abs.toLocaleString("en-AU", { minimumFractionDigits: dec, maximumFractionDigits: dec });
-  return (n < 0 ? "-$" : "$") + str;
-}
-
-function fmtPct(n) {
-  return (n >= 0 ? "+" : "") + Number(n).toFixed(1) + "%";
+function fmt(n, dec=0) {
+  if (n==null||isNaN(n)) return "$0";
+  return (n<0?"-$":"$") + Math.abs(n).toLocaleString("en-AU",{minimumFractionDigits:dec,maximumFractionDigits:dec});
 }
 
 function render(d) {
   document.getElementById("updated-time").textContent = "Refreshed " + d.meta.updated;
 
-  const pct = d.discretionary.pct_used;
-  const progressClass = pct >= 100 ? "red" : pct >= 75 ? "amber" : "";
-  const savingsClass = d.savings.on_track ? "green" : "red";
-  const savingsLabel = d.savings.on_track ? "On track ✓" : "Behind target";
-
-  // Top mover pill
+  const disc = d.discretionary, sav = d.savings, bills = d.bills;
+  const pct = disc.pct_used;
+  const barClass = pct>=100?"over":pct>=75?"warn":"";
+  const savClass = sav.on_track?"green":"red";
   const topMover = d.portfolio.top_movers[0];
-  const moverStr = topMover
-    ? `${topMover.ticker} ${topMover.change >= 0 ? "+" : ""}${topMover.change.toFixed(2)}%`
-    : "—";
-  const moverClass = topMover && topMover.change >= 0 ? "green" : "red";
+  const moverStr = topMover ? `${topMover.ticker} ${topMover.change>=0?"+":""}${topMover.change.toFixed(2)}%` : "—";
+  const moverClass = topMover&&topMover.change>=0?"green":"red";
 
   // Category bars
-  const maxSpend = Math.max(...d.spending.categories.map(c => Math.max(c.spent, c.budget)), 1);
-  const catBars = d.spending.categories
-    .filter(c => c.spent > 0 || c.budget > 0)
-    .sort((a, b) => b.spent - a.spent)
-    .map(c => {
-      const pctSpent = Math.min((c.spent / c.budget) * 100, 100).toFixed(0);
-      const budgetPos = Math.min((c.budget / maxSpend) * 100, 100).toFixed(0);
-      const fillWidth = Math.min((c.spent / maxSpend) * 100, 100).toFixed(0);
-      const over = c.over ? "over" : "";
-      return `
-        <div class="cat-row">
-          <div class="cat-name">${c.name}</div>
-          <div class="cat-track">
-            <div class="cat-fill ${over}" style="width:${fillWidth}%"></div>
-            <div class="cat-budget-line" style="left:${budgetPos}%"></div>
-          </div>
-          <div class="cat-amount ${over}">${fmt(c.spent)}</div>
-        </div>`;
+  const maxCat = Math.max(...d.spending.categories.map(c=>Math.max(c.spent,c.budget)),1);
+  const catRows = d.spending.categories
+    .filter(c=>c.spent>0||c.budget>0).sort((a,b)=>b.spent-a.spent)
+    .map(c=>{
+      const fw=Math.min((c.spent/maxCat)*100,100).toFixed(1);
+      const bp=Math.min((c.budget/maxCat)*100,100).toFixed(1);
+      const over=c.over?"over":"";
+      return `<div class="cat-row">
+        <div class="cat-name">${c.name}</div>
+        <div class="cat-track">
+          <div class="cat-fill ${over}" style="width:${fw}%"></div>
+          <div class="cat-budget-line" style="left:${bp}%"></div>
+        </div>
+        <div class="cat-amount ${over}">${fmt(c.spent)}</div>
+      </div>`;
     }).join("");
 
-  // Holdings table
-  const holdingsRows = d.portfolio.holdings.map(h => {
-    const plSign = h.pl >= 0 ? "pos" : "neg";
-    const isCrypto = h.ticker === "SOL" || h.ticker.includes("SOL");
-    const badgeClass = isCrypto ? "crypto" : "";
-    const chgSign = h.change_24h >= 0 ? "pos" : "neg";
-    return `
-      <tr>
-        <td>
-          <span class="ticker-badge ${badgeClass}">${h.ticker}</span>
-          <div style="font-size:0.72rem;color:var(--muted);margin-top:2px">${h.name.slice(0,22)}</div>
-        </td>
-        <td class="right">${fmt(h.value, 2)}</td>
-        <td class="right chg ${plSign}">${h.pl >= 0 ? "+" : ""}${fmt(Math.abs(h.pl), 0)}</td>
-        <td class="right chg ${chgSign}">${h.change_24h >= 0 ? "+" : ""}${Number(h.change_24h).toFixed(2)}%</td>
-      </tr>`;
+  // Calendar grid
+  const calCells = bills.calendar.map(day=>{
+    const hasBills = day.bills.length>0;
+    const cls = ["cal-day",hasBills?"has-bills":"",day.is_today?"today":"",day.is_past&&!day.is_today?"past":""].filter(Boolean).join(" ");
+    const dots = day.bills.map(b=>{
+      const pillClass = b.type==="adhoc"?"adhoc":b.status;
+      const label = b.name.split(" ")[0];
+      return `<div class="cal-bill-pill ${pillClass}" title="${b.name} ${fmt(b.amount,2)}">${label}</div>`;
+    }).join("");
+    return `<div class="${cls}">
+      <div class="cal-day-label">${day.day_label}</div>
+      <div class="cal-day-num">${day.day_num}</div>
+      ${dots}
+    </div>`;
   }).join("");
 
-  // Balance items
-  const balanceItems = d.balances.accounts.map(b => `
-    <div class="balance-item">
-      <div class="balance-label">${b.label}</div>
-      <div class="balance-amount">${fmt(b.amount, 2)}</div>
-    </div>`).join("");
+  // Fixed bills list
+  const fixedList = [...bills.fixed]
+    .sort((a,b)=>new Date(a.due_date)-new Date(b.due_date))
+    .map(b=>{
+      const statusLabel = b.status==="paid"?"Paid ✓"
+        :b.status==="overdue"?`Overdue ${Math.abs(b.days_until)}d`
+        :b.days_until===0?"Due today":b.days_until===1?"Due tomorrow":`Due in ${b.days_until}d`;
+      const statusColour = b.status==="paid"?"var(--green-text)":b.status==="overdue"?"var(--red-text)":"var(--blue-text)";
+      return `<div class="bill-row">
+        <div class="bill-icon ${b.status}">${b.status==="paid"?"✓":b.status==="overdue"?"!":"·"}</div>
+        <div class="bill-info">
+          <div class="bill-name">${b.name}</div>
+          <div class="bill-meta">${b.due_label} · ${b.frequency}</div>
+        </div>
+        <div>
+          <div class="bill-amount">${fmt(b.amount,2)}</div>
+          <div class="bill-status-label" style="color:${statusColour}">${statusLabel}</div>
+        </div>
+      </div>`;
+    }).join("");
 
-  document.getElementById("updated-time").textContent = "Refreshed " + d.meta.updated;
+  // Adhoc bills
+  const adhocCards = bills.adhoc.map(b=>{
+    const pctA = b.budget>0?Math.min(b.pct_of_budget,100):0;
+    const overClass = b.over?"over":"";
+    const badgeText = b.count===0?"No charges yet":`${b.count} charge${b.count===1?"":"s"} — ${fmt(b.total_spent,2)}`;
+    const occList = b.occurrences.length>0
+      ? `<div class="adhoc-occurrences">
+          <div class="adhoc-occ-title">Charges this fortnight</div>
+          ${b.occurrences.map(o=>`<div class="adhoc-occ-row"><span>${o.date_label}</span><span>${fmt(o.amount,2)}</span></div>`).join("")}
+        </div>`
+      : `<div class="adhoc-empty">No charges yet this fortnight</div>`;
+    return `<div class="adhoc-card">
+      <div class="adhoc-header">
+        <div class="adhoc-name">${b.name}</div>
+        <span class="adhoc-badge ${overClass}">${badgeText}</span>
+      </div>
+      <div class="adhoc-bar-track">
+        <div class="adhoc-bar-fill ${overClass}" style="width:${pctA}%"></div>
+      </div>
+      <div class="adhoc-meta">
+        <span>${fmt(b.total_spent,2)} of ${fmt(b.budget)} fortnightly cap</span>
+        <span>${b.budget-b.total_spent>=0?fmt(b.budget-b.total_spent,2)+" remaining":"over by "+fmt(b.total_spent-b.budget,2)}</span>
+      </div>
+      ${occList}
+    </div>`;
+  }).join("");
+
+  // Holdings
+  const holdingRows = d.portfolio.holdings.map(h=>{
+    const plClass=h.pl>=0?"pos":"neg";
+    const chgClass=h.change_24h>=0?"pos":"neg";
+    const isCrypto=(h.asset_type||"").toLowerCase()==="crypto";
+    return `<tr>
+      <td><span class="ticker-badge ${isCrypto?"crypto":""}">${h.ticker}</span>
+        <div style="font-size:.68rem;color:var(--muted);margin-top:2px">${h.name.slice(0,24)}</div></td>
+      <td class="right">${fmt(h.value,2)}</td>
+      <td class="right chg ${plClass}">${h.pl>=0?"+":""}${fmt(Math.abs(h.pl))}</td>
+      <td class="right chg ${chgClass}">${h.change_24h>=0?"+":""}${Number(h.change_24h).toFixed(2)}%</td>
+    </tr>`;
+  }).join("");
+
+  // Balances
+  const balItems = d.balances.accounts.map(b=>
+    `<div class="balance-item"><div class="balance-label">${b.label}</div><div class="balance-amount">${fmt(b.amount,2)}</div></div>`
+  ).join("");
 
   document.getElementById("content").innerHTML = `
 
-    <p class="section-title">Fortnightly budget — day ${d.cycle.day} of ${d.cycle.total_days}</p>
+    <p class="section-title">Fortnightly spend — day ${d.cycle.day} of ${d.cycle.total_days} · ${d.cycle.days_remaining} days remaining</p>
 
-    <div class="budget-card">
-      <div class="budget-header">
+    <div class="card">
+      <div class="big-bar-header">
         <div>
-          <div class="budget-main">${fmt(d.discretionary.spent, 2)}</div>
-          <div class="budget-sub">of ${fmt(d.discretionary.budget)} budget · ${d.cycle.days_remaining} days left</div>
+          <div class="big-bar-main">${fmt(disc.spent,2)}</div>
+          <div class="big-bar-sub">of ${fmt(disc.budget)} fortnightly budget</div>
         </div>
-        <div class="budget-right">
-          <div class="budget-pct ${progressClass}">${pct}%</div>
-          <div class="budget-label">used</div>
+        <div class="big-bar-right">
+          <div class="big-bar-pct ${barClass}">${pct}%</div>
+          <div class="big-bar-label">used</div>
         </div>
       </div>
-      <div class="progress-track">
-        <div class="progress-fill ${progressClass}" style="width:${Math.min(pct, 100)}%"></div>
-      </div>
-      <div class="budget-meta">
-        <span>${fmt(d.discretionary.remaining, 2)} remaining</span>
-        <span>${d.discretionary.projected > 0 ? fmt(d.discretionary.projected) + " projected" : "First day"}</span>
+      <div class="bar-track"><div class="bar-fill ${barClass}" style="width:${Math.min(pct,100)}%"></div></div>
+      <div class="bar-meta">
+        <span>${fmt(disc.remaining,2)} remaining</span>
+        <span>${disc.projected>0?fmt(disc.projected)+" projected":"First day of cycle"}</span>
       </div>
     </div>
 
     <div class="stats-grid">
       <div class="stat-card">
         <div class="stat-label">Savings this cycle</div>
-        <div class="stat-value ${savingsClass}">${fmt(d.savings.amount, 0)}</div>
-        <div class="stat-sub ${savingsClass}">${savingsLabel}</div>
+        <div class="stat-value ${savClass}">${fmt(sav.amount)}</div>
+        <div class="stat-sub ${savClass}">${sav.on_track?"On track ✓":"Behind target"}</div>
       </div>
       <div class="stat-card">
         <div class="stat-label">Savings rate</div>
-        <div class="stat-value ${savingsClass}">${d.savings.rate_pct}%</div>
-        <div class="stat-sub" style="color:var(--muted)">target ${d.savings.target_rate_pct}%</div>
+        <div class="stat-value ${savClass}">${sav.rate_pct}%</div>
+        <div class="stat-sub" style="color:var(--muted)">target ${sav.target_rate_pct}%</div>
       </div>
       <div class="stat-card">
-        <div class="stat-label">Total portfolio</div>
-        <div class="stat-value blue">${fmt(d.portfolio.total, 0)}</div>
-        <div class="stat-sub green">+${fmt(d.portfolio.pl, 0)} all-time</div>
+        <div class="stat-label">Portfolio value</div>
+        <div class="stat-value blue">${fmt(d.portfolio.total)}</div>
+        <div class="stat-sub green">+${fmt(d.portfolio.pl)} all-time</div>
       </div>
       <div class="stat-card">
-        <div class="stat-label">Top mover today</div>
+        <div class="stat-label">Top mover</div>
         <div class="stat-value ${moverClass}" style="font-size:1rem">${moverStr}</div>
         <div class="stat-sub" style="color:var(--muted)">${d.portfolio.pl_pct}% all-time P&L</div>
       </div>
     </div>
 
-    <p class="section-title">Spending by category — this fortnight (vs budget)</p>
+    <p class="section-title">Spending by category — this fortnight</p>
     <div class="card">
-      <div style="font-size:0.72rem;color:var(--muted);margin-bottom:0.75rem">
-        Bar = spent &nbsp;│&nbsp; Vertical line = fortnightly budget
-      </div>
-      ${catBars}
-      <div style="display:flex;justify-content:space-between;font-size:0.75rem;color:var(--muted);border-top:1px solid var(--border);margin-top:0.75rem;padding-top:0.75rem">
-        <span>Mortgage this cycle: ${fmt(d.spending.mortgage, 2)}</span>
-        <span>All accounts total: ${fmt(d.spending.total_all_accounts, 2)}</span>
+      <div style="font-size:.7rem;color:var(--muted);margin-bottom:.75rem">Bar = spent &nbsp;│&nbsp; Line = fortnightly budget</div>
+      ${catRows}
+      <div style="display:flex;justify-content:space-between;font-size:.75rem;color:var(--muted);border-top:1px solid var(--border);margin-top:.75rem;padding-top:.75rem">
+        <span>Mortgage: ${fmt(d.spending.mortgage,2)}</span>
+        <span>All accounts total: ${fmt(d.spending.total_all_accounts,2)}</span>
       </div>
     </div>
+
+    <p class="section-title">Fixed bills — this fortnight</p>
+
+    <div class="card">
+      <div class="card-title">Paid vs upcoming</div>
+      <div class="big-bar-header" style="margin-bottom:.75rem">
+        <div>
+          <div class="big-bar-main green">${fmt(bills.summary.total_paid,2)}</div>
+          <div class="big-bar-sub">paid of ${fmt(bills.summary.total_due,2)} total</div>
+        </div>
+        <div class="big-bar-right">
+          <div class="big-bar-pct green">${bills.summary.paid_pct}%</div>
+          <div class="big-bar-label">cleared</div>
+        </div>
+      </div>
+      <div class="bar-track">
+        <div class="bar-fill" style="width:${bills.summary.paid_pct}%;background:var(--green)"></div>
+      </div>
+      <div class="bills-stats" style="margin-top:.75rem">
+        <div class="bill-stat"><div class="bill-stat-label">Paid</div><div class="bill-stat-value green">${fmt(bills.summary.total_paid,2)}</div></div>
+        <div class="bill-stat"><div class="bill-stat-label">Upcoming</div><div class="bill-stat-value blue">${fmt(bills.summary.total_upcoming,2)}</div></div>
+        ${bills.summary.total_overdue>0?`<div class="bill-stat"><div class="bill-stat-label">Overdue</div><div class="bill-stat-value red">${fmt(bills.summary.total_overdue,2)}</div></div>`:""}
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">14-day calendar</div>
+      <div class="cal-grid">${calCells}</div>
+      <div style="display:flex;gap:10px;font-size:.68rem;color:var(--muted);flex-wrap:wrap;margin-top:.75rem">
+        <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:2px;background:var(--green-bg);display:inline-block"></span>Paid</span>
+        <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:2px;background:var(--blue-bg);display:inline-block"></span>Upcoming</span>
+        <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:2px;background:var(--amber-bg);display:inline-block"></span>Adhoc charge</span>
+        ${bills.summary.total_overdue>0?'<span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:2px;background:var(--red-bg);display:inline-block"></span>Overdue</span>':""}
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Bill details</div>
+      ${fixedList||'<div style="color:var(--muted);font-size:.82rem">No fixed bills scheduled this cycle</div>'}
+    </div>
+
+    <p class="section-title">Adhoc tracking — tolls & transport</p>
+
+    ${adhocCards||'<div class="card"><div style="color:var(--muted);font-size:.82rem">No adhoc bills configured</div></div>'}
 
     <p class="section-title">Investment portfolio</p>
     <div class="card">
       <div style="overflow-x:auto">
         <table class="holdings-table">
-          <thead>
-            <tr>
-              <th>Holding</th>
-              <th class="right">Value</th>
-              <th class="right">All-time P&L</th>
-              <th class="right">Today</th>
-            </tr>
-          </thead>
-          <tbody>${holdingsRows}</tbody>
+          <thead><tr><th>Holding</th><th class="right">Value</th><th class="right">All-time P&L</th><th class="right">Today</th></tr></thead>
+          <tbody>${holdingRows}</tbody>
         </table>
       </div>
-      <div class="portfolio-total">
-        <span style="color:var(--muted)">Total portfolio</span>
-        <strong>${fmt(d.portfolio.total, 2)} &nbsp;<span class="green">+${fmt(d.portfolio.pl, 0)} (${d.portfolio.pl_pct}%)</span></strong>
+      <div class="portfolio-footer">
+        <span style="color:var(--muted)">Total</span>
+        <strong>${fmt(d.portfolio.total,2)} &nbsp;<span class="green">+${fmt(d.portfolio.pl)} (${d.portfolio.pl_pct}%)</span></strong>
       </div>
     </div>
 
     <p class="section-title">Account balances</p>
     <div class="card">
-      <div class="balance-grid">
-        ${balanceItems}
-      </div>
-      <div style="text-align:right;font-size:0.8rem;color:var(--muted);margin-top:0.75rem;padding-top:0.75rem;border-top:1px solid var(--border)">
-        Total liquid: <strong>${fmt(d.balances.total, 2)}</strong>
-      </div>
+      <div class="balance-grid">${balItems}</div>
+      <div class="balance-total">Total liquid: <strong>${fmt(d.balances.total,2)}</strong></div>
     </div>
   `;
 }
 
-// Auto-refresh every 30 minutes
-setTimeout(() => { if (isAuthenticated()) loadDashboard(); }, 30 * 60 * 1000);
+setTimeout(()=>{ if(isAuth()) loadDashboard(); }, 30*60*1000);
 </script>
-
 </body>
 </html>
