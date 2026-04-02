@@ -375,8 +375,7 @@ async function main() {
     .sort((a,b)=>Math.abs(b.change_24h)-Math.abs(a.change_24h))
     .slice(0,3).map(h=>({ticker:h.ticker,change:h.change_24h}));
 
-  const updatedAEST = new Date(now.toLocaleString("en-AU",{timeZone:"Australia/Sydney"}));
-  const updatedStr = updatedAEST.toLocaleString("en-AU",{weekday:"short",day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"});
+  const updatedStr = now.toLocaleString("en-AU",{timeZone:"Australia/Sydney",weekday:"short",day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"});
 
   const data = {
     meta:{ updated:updatedStr, updated_iso:now.toISOString() },
