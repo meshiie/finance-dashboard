@@ -274,10 +274,8 @@ async function gatherData() {
     .sort((a,b)=>Math.abs(parseFloat(b.Change_24h_Pct))-Math.abs(parseFloat(a.Change_24h_Pct)))
     .slice(0,3).map(p=>`${p.Ticker}: ${parseFloat(p.Change_24h_Pct)>=0?"+":""}${parseFloat(p.Change_24h_Pct).toFixed(2)}%`);
 
-  const nowAEST = new Date(now.toLocaleString("en-AU",{timeZone:"Australia/Sydney"}));
-
   return {
-    now, nowAEST, cycle, balances, cfg,
+    now, cycle, balances, cfg,
     discretionaryCats, discretionaryTotal, discretionaryRemaining, projectedDiscretionary,
     prevDiscretionaryCats, prevDiscretionaryTotal, biggestThisCycle,
     allCatsThisCycle, mortgageThisCycle, totalSpendThisCycle,
@@ -364,8 +362,8 @@ async function main() {
   console.log(`📊 Day ${data.cycle.daysElapsed+1}/${data.cycle.cycleDays} | Discretionary: $${data.discretionaryTotal.toFixed(2)}/$${data.fnSpendBudget} | Savings: $${data.actualSavings.toFixed(2)}`);
   console.log(`🚗 New adhoc charges: ${data.newAdhocCharges.length} | 📅 Payday: ${data.isPayday}`);
 
-  const timeStr = data.nowAEST.toLocaleTimeString("en-AU",{hour:"2-digit",minute:"2-digit"});
-  const dateStr = data.nowAEST.toLocaleDateString("en-AU",{weekday:"short",day:"numeric",month:"short"});
+  const timeStr = data.now.toLocaleTimeString("en-AU",{timeZone:"Australia/Sydney",hour:"2-digit",minute:"2-digit"});
+  const dateStr = data.now.toLocaleDateString("en-AU",{timeZone:"Australia/Sydney",weekday:"short",day:"numeric",month:"short"});
 
   // Send adhoc alert first if any new charges detected
   if (data.newAdhocCharges.length > 0) {
