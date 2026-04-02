@@ -209,14 +209,10 @@ footer{text-align:center;padding:2rem 0 1rem;font-size:.72rem;color:var(--muted)
 
 <script>
 const CORRECT_PIN = "DASHBOARD_PIN_PLACEHOLDER";
-const KEY = "fin_v2";
-
-function isAuth() { try { return localStorage.getItem(KEY)===btoa(CORRECT_PIN); } catch { return false; } }
 
 function checkPin() {
   const v = String(document.getElementById("pin-input").value).trim();
   if (v === CORRECT_PIN) {
-    try { localStorage.setItem(KEY, btoa(CORRECT_PIN)); } catch {}
     document.getElementById("pin-screen").style.display = "none";
     document.getElementById("dashboard").style.display = "block";
     loadDashboard();
@@ -225,11 +221,6 @@ function checkPin() {
     document.getElementById("pin-input").value = "";
     document.getElementById("pin-input").focus();
   }
-}
-
-if (isAuth()) {
-  document.getElementById("pin-screen").style.display = "none";
-  document.getElementById("dashboard").style.display = "block";
 }
 
 async function loadDashboard() {
@@ -481,7 +472,7 @@ function render(d) {
   `;
 }
 
-setTimeout(()=>{ if(isAuth()) loadDashboard(); }, 30*60*1000);
+setTimeout(() => loadDashboard(), 30 * 60 * 1000);
 </script>
 </body>
 </html>
