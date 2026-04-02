@@ -373,7 +373,7 @@ async function main() {
   }
 
   // Daily or fortnightly summary
-  let summary, header;
+let summary, header;
   if (data.isPayday) {
     console.log("💸 Generating fortnightly payday summary...");
     summary = await askClaude(buildFortnightlyPrompt(data), 600);
@@ -384,7 +384,8 @@ async function main() {
     header = `📊 <b>Morning Briefing</b>`;
   }
 
-  await sendTelegram(`${header} · ${dateStr} ${timeStr}\n\n${summary}`);
+  const dashboardUrl = `https://meshiie.github.io/finance-dashboard`;
+  await sendTelegram(`${header} · ${dateStr} ${timeStr}\n\n${summary}\n\n📱 <a href="${dashboardUrl}">Open dashboard</a>`);
   console.log("✅ Done:", new Date().toISOString());
 }
 
