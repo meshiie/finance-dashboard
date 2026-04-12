@@ -372,6 +372,7 @@ function render(d) {
         <span>${disc.projected>0?fmt(disc.projected)+" projected":"First day of cycle"}</span>
       </div>
       ${disc.reimbursed>0?`<div style="font-size:.75rem;color:var(--green-text);margin-top:.4rem">↩️ Reimbursements netted: -${fmt(disc.reimbursed,2)}</div>`:""}
+      ${disc.one_off>0?`<div style="font-size:.75rem;color:var(--amber-text);margin-top:.25rem">⚡ One-off spend (excl. budget): ${fmt(disc.one_off,2)}</div>`:""}
     </div>
 
     <div class="stats-grid">
