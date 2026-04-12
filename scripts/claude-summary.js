@@ -124,9 +124,23 @@ function parseTxns(rows) {
 function buildCatTotalsSimple(txns, from, to, overrides) {
   const out = {};
   for (const t of txns) {
-    if (t.direction !== "debit") continue;
     if (t.date < from) continue;
     if (to && t.date >= to) continue;
+
+    // Credits — handle reimbursements
+    if (t.direction === "credit") {
+      const d = (t.desc||"").toLowerCase();
+      const isReimbursement = overrides.some(ov =>
+        ov.category === "reimbursement" && ov.keyword && d.includes(ov.keyword.toLowerCase())
+      );
+      if (isReimbursement) {
+        out["__reimbursements__"] = (out["__reimbursements__"]||0) + t.amount;
+      }
+      continue;
+    }
+
+    // Debits — normal spend logic
+    if (t.direction !== "debit") continue;
     const resolved = resolveCategory(t.cat, t.desc, overrides);
     if (!resolved || resolved === "skip") continue;
     const hasOverride = overrides.some(ov => ov.keyword && (t.desc||"").toLowerCase().includes(ov.keyword.toLowerCase()));
@@ -309,8 +323,12 @@ async function gatherData() {
   }
 
   // Spend
-  const discretionaryCats = buildCatTotalsSimple(spend0524, cycle.thisCycleStart, null, overrides);
-  const discretionaryTotal = Object.values(discretionaryCats).reduce((a,b)=>a+b,0);
+  const discretionaryCatsRaw = buildCatTotalsSimple(spend0524, cycle.thisCycleStart, null, overrides);
+  const totalReimbursed = parseFloat((discretionaryCatsRaw["__reimbursements__"] || 0).toFixed(2));
+  delete discretionaryCatsRaw["__reimbursements__"];
+  const discretionaryCats = discretionaryCatsRaw;
+  const discretionaryGross = Object.values(discretionaryCats).reduce((a,b)=>a+b,0);
+  const discretionaryTotal = Math.max(0, discretionaryGross - totalReimbursed);
   const discretionaryRemaining = Math.max(0, fnSpendBudget-discretionaryTotal);
   const projectedDiscretionary = cycle.daysElapsed>0
     ? (discretionaryTotal/cycle.daysElapsed)*cycle.cycleDays : 0;
@@ -387,6 +405,7 @@ async function gatherData() {
   return {
     now, cycle, balances,
     discretionaryCats, discretionaryTotal, discretionaryRemaining, projectedDiscretionary,
+    totalReimbursed,
     prevDiscretionaryCats, prevDiscretionaryTotal,
     top3Txns, allCatsThisCycle, mortgageThisCycle, totalSpendThisCycle,
     fnIncome, fnSpendBudget, fnSavingsTarget, savingsTargetPct,
@@ -447,9 +466,13 @@ function buildDailyMessage(d) {
     ?`\n\n⚠️ <b>UNCATEGORISED (${d.stillUncategorised.length})</b>\n<code>${d.stillUncategorised.map(t=>`  $${t.amount.toFixed(2).padStart(7)}  ${t.desc.slice(0,35)}`).join("\n")}</code>`
     :"";
 
+  const reimbursedLine = d.totalReimbursed > 0
+    ? `\n↩️ Reimbursements netted: -$${d.totalReimbursed.toFixed(2)}`
+    : "";
+
   return `💳 <b>SPEND</b>  $${Math.round(d.discretionaryTotal).toLocaleString("en-AU")} of $${d.fnSpendBudget.toLocaleString("en-AU")}  ${barIcon} ${pct}%
 <code>${bar}</code>
-${daysLeft} days left  ·  ${projected}${projOver}
+${daysLeft} days left  ·  ${projected}${projOver}${reimbursedLine}
 💡 Rec. <b>$${recPerDay}/day</b>  ${perDayIcon}
 
 🧾 <b>TOP 3 THIS CYCLE</b>
