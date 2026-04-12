@@ -145,6 +145,11 @@ function buildCatTotalsSimple(txns, from, to, overrides) {
     if (!resolved || resolved === "skip") continue;
     const hasOverride = overrides.some(ov => ov.keyword && (t.desc||"").toLowerCase().includes(ov.keyword.toLowerCase()));
     if (SKIP_CATS.has(t.cat) && !hasOverride && !isMortgage(t.desc)) continue;
+    // one-off: track separately, exclude from discretionary budget
+    if (resolved === "one-off") {
+      out["__oneoff__"] = (out["__oneoff__"]||0) + t.amount;
+      continue;
+    }
     out[resolved] = (out[resolved]||0) + t.amount;
   }
   return out;
@@ -325,7 +330,9 @@ async function gatherData() {
   // Spend
   const discretionaryCatsRaw = buildCatTotalsSimple(spend0524, cycle.thisCycleStart, null, overrides);
   const totalReimbursed = parseFloat((discretionaryCatsRaw["__reimbursements__"] || 0).toFixed(2));
+  const totalOneOff = parseFloat((discretionaryCatsRaw["__oneoff__"] || 0).toFixed(2));
   delete discretionaryCatsRaw["__reimbursements__"];
+  delete discretionaryCatsRaw["__oneoff__"];
   const discretionaryCats = discretionaryCatsRaw;
   const discretionaryGross = Object.values(discretionaryCats).reduce((a,b)=>a+b,0);
   const discretionaryTotal = Math.max(0, discretionaryGross - totalReimbursed);
@@ -405,7 +412,7 @@ async function gatherData() {
   return {
     now, cycle, balances,
     discretionaryCats, discretionaryTotal, discretionaryRemaining, projectedDiscretionary,
-    totalReimbursed,
+    totalReimbursed, totalOneOff,
     prevDiscretionaryCats, prevDiscretionaryTotal,
     top3Txns, allCatsThisCycle, mortgageThisCycle, totalSpendThisCycle,
     fnIncome, fnSpendBudget, fnSavingsTarget, savingsTargetPct,
@@ -469,10 +476,13 @@ function buildDailyMessage(d) {
   const reimbursedLine = d.totalReimbursed > 0
     ? `\n↩️ Reimbursements netted: -$${d.totalReimbursed.toFixed(2)}`
     : "";
+  const oneOffLine = d.totalOneOff > 0
+    ? `\n⚡ One-off spend (excl. budget): $${d.totalOneOff.toFixed(2)}`
+    : "";
 
   return `💳 <b>SPEND</b>  $${Math.round(d.discretionaryTotal).toLocaleString("en-AU")} of $${d.fnSpendBudget.toLocaleString("en-AU")}  ${barIcon} ${pct}%
 <code>${bar}</code>
-${daysLeft} days left  ·  ${projected}${projOver}${reimbursedLine}
+${daysLeft} days left  ·  ${projected}${projOver}${reimbursedLine}${oneOffLine}
 💡 Rec. <b>$${recPerDay}/day</b>  ${perDayIcon}
 
 🧾 <b>TOP 3 THIS CYCLE</b>
