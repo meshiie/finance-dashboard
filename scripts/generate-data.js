@@ -154,6 +154,11 @@ function buildCatTotals(txns, from, to, overrides) {
     if (!isRealSpend(t.cat, t.desc, overrides)) continue;
     const tag = resolveCategory(t.cat, t.desc, overrides);
     if (!tag || tag === "skip") continue;
+    // one-off: track separately, exclude from discretionary budget
+    if (tag === "one-off") {
+      out["__oneoff__"] = (out["__oneoff__"]||0) + t.amount;
+      continue;
+    }
     out[tag] = (out[tag]||0) + t.amount;
   }
   return out;
@@ -303,7 +308,9 @@ async function main() {
   // Discretionary (Spend 0524 only) — with overrides + reimbursements applied
   const discretionaryCatsRaw = buildCatTotals(spend0524, cycle.thisCycleStart, null, overrides);
   const totalReimbursed = parseFloat((discretionaryCatsRaw["__reimbursements__"] || 0).toFixed(2));
+  const totalOneOff = parseFloat((discretionaryCatsRaw["__oneoff__"] || 0).toFixed(2));
   delete discretionaryCatsRaw["__reimbursements__"];
+  delete discretionaryCatsRaw["__oneoff__"];
   const discretionaryCats = discretionaryCatsRaw;
   const discretionaryGross = Object.values(discretionaryCats).reduce((a,b)=>a+b,0);
   const discretionaryTotal = Math.max(0, discretionaryGross - totalReimbursed);
@@ -421,7 +428,7 @@ async function main() {
   const data = {
     meta:{ updated:updatedStr, updated_iso:now.toISOString() },
     cycle:{ day:cycle.daysElapsed+1, total_days:cycle.cycleDays, days_remaining:cycle.daysRemaining, cycle_start:cycle.thisCycleStart.toISOString().slice(0,10) },
-    discretionary:{ spent:parseFloat(discretionaryTotal.toFixed(2)), budget:fnSpendBudget, remaining:parseFloat(discretionaryRemaining.toFixed(2)), projected:projectedDiscretionary, pct_used:pctUsed, reimbursed:totalReimbursed },
+    discretionary:{ spent:parseFloat(discretionaryTotal.toFixed(2)), budget:fnSpendBudget, remaining:parseFloat(discretionaryRemaining.toFixed(2)), projected:projectedDiscretionary, pct_used:pctUsed, reimbursed:totalReimbursed, one_off:totalOneOff },
     savings:{ amount:parseFloat(actualSavings.toFixed(2)), target:fnSavingsTarget, rate_pct:savingsRate, target_rate_pct:savingsTargetPct, on_track:onTrackSavings },
     spending:{ categories:categoryData, mortgage:parseFloat(mortgageThisCycle.toFixed(2)), total_all_accounts:parseFloat(totalSpendThisCycle.toFixed(2)) },
     bills:{ summary:{ total_due:parseFloat(totalBillsDue.toFixed(2)), total_paid:parseFloat(totalBillsPaid.toFixed(2)), total_upcoming:parseFloat(totalBillsUpcoming.toFixed(2)), total_overdue:parseFloat(totalBillsOverdue.toFixed(2)), paid_pct:billsPaidPct }, fixed:fixedBillsWithStatus, adhoc:adhocBillsData, calendar:calendarDays },
@@ -432,7 +439,7 @@ async function main() {
   writeFileSync("data.json", JSON.stringify(data, null, 2));
   console.log(`✅ data.json written — ${overrides.length} overrides applied`);
   console.log(`   Bills: ${fixedBillsWithStatus.length} due | ${fixedBillsWithStatus.filter(b=>b.status==="paid").length} paid`);
-  console.log(`   Portfolio: $${portfolioTotal.toFixed(2)} | Discretionary: $${discretionaryTotal.toFixed(2)}/$${fnSpendBudget} | Reimbursed: $${totalReimbursed}`);
+  console.log(`   Portfolio: $${portfolioTotal.toFixed(2)} | Discretionary: $${discretionaryTotal.toFixed(2)}/$${fnSpendBudget} | Reimbursed: $${totalReimbursed} | One-off: $${totalOneOff}`);
 }
 
 main().catch(err => { console.error("💥", err); process.exit(1); });
