@@ -134,9 +134,23 @@ function parseTxns(rows) {
 function buildCatTotals(txns, from, to, overrides) {
   const out = {};
   for (const t of txns) {
-    if (t.direction !== "debit") continue;
     if (t.date < from) continue;
     if (to && t.date >= to) continue;
+
+    // Credits — handle reimbursements
+    if (t.direction === "credit") {
+      const d = (t.desc||"").toLowerCase();
+      const isReimbursement = overrides.some(ov =>
+        ov.category === "reimbursement" && ov.keyword && d.includes(ov.keyword.toLowerCase())
+      );
+      if (isReimbursement) {
+        out["__reimbursements__"] = (out["__reimbursements__"]||0) + t.amount;
+      }
+      continue;
+    }
+
+    // Debits — normal spend logic
+    if (t.direction !== "debit") continue;
     if (!isRealSpend(t.cat, t.desc, overrides)) continue;
     const tag = resolveCategory(t.cat, t.desc, overrides);
     if (!tag || tag === "skip") continue;
@@ -286,9 +300,13 @@ async function main() {
   const main1524 = parseTxns(main1524Raw);
   const allTxns = [...spend0524,...bills6660,...main1524];
 
-  // Discretionary (Spend 0524 only) — with overrides applied
-  const discretionaryCats = buildCatTotals(spend0524, cycle.thisCycleStart, null, overrides);
-  const discretionaryTotal = Object.values(discretionaryCats).reduce((a,b)=>a+b,0);
+  // Discretionary (Spend 0524 only) — with overrides + reimbursements applied
+  const discretionaryCatsRaw = buildCatTotals(spend0524, cycle.thisCycleStart, null, overrides);
+  const totalReimbursed = parseFloat((discretionaryCatsRaw["__reimbursements__"] || 0).toFixed(2));
+  delete discretionaryCatsRaw["__reimbursements__"];
+  const discretionaryCats = discretionaryCatsRaw;
+  const discretionaryGross = Object.values(discretionaryCats).reduce((a,b)=>a+b,0);
+  const discretionaryTotal = Math.max(0, discretionaryGross - totalReimbursed);
   const discretionaryRemaining = Math.max(0, fnSpendBudget-discretionaryTotal);
   const projectedDiscretionary = cycle.daysElapsed>0
     ? Math.round((discretionaryTotal/cycle.daysElapsed)*cycle.cycleDays) : 0;
@@ -403,7 +421,7 @@ async function main() {
   const data = {
     meta:{ updated:updatedStr, updated_iso:now.toISOString() },
     cycle:{ day:cycle.daysElapsed+1, total_days:cycle.cycleDays, days_remaining:cycle.daysRemaining, cycle_start:cycle.thisCycleStart.toISOString().slice(0,10) },
-    discretionary:{ spent:parseFloat(discretionaryTotal.toFixed(2)), budget:fnSpendBudget, remaining:parseFloat(discretionaryRemaining.toFixed(2)), projected:projectedDiscretionary, pct_used:pctUsed },
+    discretionary:{ spent:parseFloat(discretionaryTotal.toFixed(2)), budget:fnSpendBudget, remaining:parseFloat(discretionaryRemaining.toFixed(2)), projected:projectedDiscretionary, pct_used:pctUsed, reimbursed:totalReimbursed },
     savings:{ amount:parseFloat(actualSavings.toFixed(2)), target:fnSavingsTarget, rate_pct:savingsRate, target_rate_pct:savingsTargetPct, on_track:onTrackSavings },
     spending:{ categories:categoryData, mortgage:parseFloat(mortgageThisCycle.toFixed(2)), total_all_accounts:parseFloat(totalSpendThisCycle.toFixed(2)) },
     bills:{ summary:{ total_due:parseFloat(totalBillsDue.toFixed(2)), total_paid:parseFloat(totalBillsPaid.toFixed(2)), total_upcoming:parseFloat(totalBillsUpcoming.toFixed(2)), total_overdue:parseFloat(totalBillsOverdue.toFixed(2)), paid_pct:billsPaidPct }, fixed:fixedBillsWithStatus, adhoc:adhocBillsData, calendar:calendarDays },
@@ -414,7 +432,7 @@ async function main() {
   writeFileSync("data.json", JSON.stringify(data, null, 2));
   console.log(`✅ data.json written — ${overrides.length} overrides applied`);
   console.log(`   Bills: ${fixedBillsWithStatus.length} due | ${fixedBillsWithStatus.filter(b=>b.status==="paid").length} paid`);
-  console.log(`   Portfolio: $${portfolioTotal.toFixed(2)} | Discretionary: $${discretionaryTotal.toFixed(2)}/$${fnSpendBudget}`);
+  console.log(`   Portfolio: $${portfolioTotal.toFixed(2)} | Discretionary: $${discretionaryTotal.toFixed(2)}/$${fnSpendBudget} | Reimbursed: $${totalReimbursed}`);
 }
 
 main().catch(err => { console.error("💥", err); process.exit(1); });
