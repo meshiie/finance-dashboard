@@ -371,6 +371,7 @@ function render(d) {
         <span>${fmt(disc.remaining,2)} remaining</span>
         <span>${disc.projected>0?fmt(disc.projected)+" projected":"First day of cycle"}</span>
       </div>
+      ${disc.reimbursed>0?`<div style="font-size:.75rem;color:var(--green-text);margin-top:.4rem">↩️ Reimbursements netted: -${fmt(disc.reimbursed,2)}</div>`:""}
     </div>
 
     <div class="stats-grid">
